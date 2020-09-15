@@ -19,13 +19,15 @@ class ClientListener(Thread):
 		print(self.name + ' disconnected')
 
 
-
 	def run(self):
 		#recieve information about file
 		file_info = (self.sock.recv(BLOCK_SIZE)).decode()
 		file_size = int(file_info.split()[0])
 		file_name = file_info.split()[1]
+
+		#split file_neme and format
 		file_name, file_format = file_name.split('.')
+
 		#caculate number of 1KB chunks in the file
 		#and size of remaining data
 		n_blocks = file_size//BLOCK_SIZE

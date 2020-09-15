@@ -5,17 +5,14 @@ import socket
 BLOCK_SIZE = 1024
 
 parser = argparse.ArgumentParser()
-parser.add_argument('file', help='path to the file')
+parser.add_argument('file', help='path to the file (no spaces in the name)')
 parser.add_argument('addres', help='ip or url of the server')
-parser.add_argument('port', help='port to use, default 6342', type=int, default=6342)
+parser.add_argument('port', help='port to use, server is running on 6342', type=int, default=6342)
 
-
+#parse arguments
 args = parser.parse_args()
-
 path = args.file
-
 addres = args.addres
-
 port = args.port
 
 
@@ -32,7 +29,6 @@ file_size = os.path.getsize(path)
 #open file in binary mode
 f = open(path, 'rb')
 
-print(file_name, file_size)
 
 #pad file_info to be 1 KB
 file_info = str(file_size) + ' ' + file_name
@@ -46,19 +42,15 @@ sock.send(file_info.encode())
 n_blocks = file_size//BLOCK_SIZE
 extra_block = file_size - n_blocks*BLOCK_SIZE
 
-progress_split = 1
-if(n_blocks>4):
-	progress_split = n_blocks // 4
 
 #send blocks
-#progress bar was taken from one of the answers on
+#progress bar was made with the help of one of the answers on
 #https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
 for i in range(n_blocks):
 	data = f.read(BLOCK_SIZE)
 	sock.send(data)
-	if i % 8 == 0:
-		progress = i/n_blocks
-		print("\r[{0:50s}] {1:.1f}%".format('#' * int(progress * 50), progress*100), end="", flush=True)
+	progress = i/n_blocks
+	print("\r[{0:50s}] {1:.1f}%".format('#' * int(progress * 50), progress*100), end="", flush=True)
 print()
 
 #send remaining
